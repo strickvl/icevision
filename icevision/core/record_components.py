@@ -124,23 +124,22 @@ class ImageRecordComponent(RecordComponent):
         self.composite.set_img_size(ImgSize(width=width, height=height), original=True)
 
     def _repr(self) -> List[str]:
-        if self.img is not None:
-            if isinstance(self.img, np.ndarray):
-                ndims = len(self.img.shape)
-                if ndims == 3:  # RGB, RGBA
-                    height, width, channels = self.img.shape
-                elif ndims == 2:  # Grayscale
-                    height, width, channels = [*self.img.shape, 1]
-                else:
-                    raise ValueError(
-                        f"Expected image to have 2 or 3 dimensions, got {ndims} instead"
-                    )
-                return [f"Img: {width}x{height}x{channels} <np.ndarray> Image"]
-            elif isinstance(self.img, PIL.Image.Image):
-                width, height = self.img.size
-                return [f"Img: {width}x{height} <PIL.Image; mode='{self.img.mode}'>"]
-        else:
+        if self.img is None:
             return [f"Img: {self.img}"]
+        if isinstance(self.img, np.ndarray):
+            ndims = len(self.img.shape)
+            if ndims == 2:
+                height, width, channels = [*self.img.shape, 1]
+            elif ndims == 3:
+                height, width, channels = self.img.shape
+            else:
+                raise ValueError(
+                    f"Expected image to have 2 or 3 dimensions, got {ndims} instead"
+                )
+            return [f"Img: {width}x{height}x{channels} <np.ndarray> Image"]
+        elif isinstance(self.img, PIL.Image.Image):
+            width, height = self.img.size
+            return [f"Img: {width}x{height} <PIL.Image; mode='{self.img.mode}'>"]
 
     def _unload(self):
         self.img = None
@@ -168,11 +167,10 @@ class FilepathRecordComponent(ImageRecordComponent):
         self.set_img(img)
 
     def _autofix(self) -> Dict[str, bool]:
-        exists = self.filepath.exists()
-        if not exists:
+        if exists := self.filepath.exists():
+            return super()._autofix()
+        else:
             raise AutofixAbort(f"File '{self.filepath}' does not exist")
-
-        return super()._autofix()
 
     def _repr(self) -> List[str]:
         return [f"Filepath: {self.filepath}", *super()._repr()]

@@ -50,7 +50,12 @@ def build_model(
     if model_type == "one_stage_detector_bbox":
         cfg.model.bbox_head.num_classes = num_classes - 1
 
-    if model_type == "two_stage_detector_bbox":
+    elif model_type == "one_stage_detector_mask":
+        cfg.model.bbox_head.num_classes = num_classes - 1
+        cfg.model.segm_head.num_classes = num_classes - 1
+        cfg.model.mask_head.num_classes = num_classes - 1
+
+    elif model_type == "two_stage_detector_bbox":
         # Sparse-RCNN has a list of bbox_head whereas Faster-RCNN has only one
         if isinstance(cfg.model.roi_head.bbox_head, list):
             for bbox_head in cfg.model.roi_head.bbox_head:
@@ -59,16 +64,11 @@ def build_model(
         else:
             cfg.model.roi_head.bbox_head.num_classes = num_classes - 1
 
-    if model_type == "two_stage_detector_mask":
+    elif model_type == "two_stage_detector_mask":
         cfg.model.roi_head.bbox_head.num_classes = num_classes - 1
         cfg.model.roi_head.mask_head.num_classes = num_classes - 1
 
-    if model_type == "one_stage_detector_mask":
-        cfg.model.bbox_head.num_classes = num_classes - 1
-        cfg.model.segm_head.num_classes = num_classes - 1
-        cfg.model.mask_head.num_classes = num_classes - 1
-
-    if (pretrained == False) or (weights_path is not None):
+    if not pretrained or weights_path is not None:
         cfg.model.pretrained = None
 
     _model = build_detector(cfg.model, cfg.get("train_cfg"), cfg.get("test_cfg"))

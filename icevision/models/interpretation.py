@@ -16,9 +16,9 @@ from icevision.core.record_components import LossesRecordComponent
 
 
 def get_weighted_sum(sample, weights):
-    loss_weighted = 0
-    for loss, weight in weights.items():
-        loss_weighted += sample.losses[loss] * weight
+    loss_weighted = sum(
+        sample.losses[loss] * weight for loss, weight in weights.items()
+    )
     sample.losses["loss_weighted"] = loss_weighted
     return sample
 
@@ -62,7 +62,7 @@ def sort_losses(
     if isinstance(by_copy, dict):
         if by_copy["method"] == "weighted":
             annotations = [
-                f"loss_weighted: {round(s.losses['loss_weighted'], 5)}\n" + a
+                f"loss_weighted: {round(s.losses['loss_weighted'], 5)}\n{a}"
                 for a, s in zip(annotations, sorted_samples)
             ]
 
@@ -79,7 +79,7 @@ def get_stats(l: List) -> dict:
         "mean": l.mean(),
     }
 
-    q = {k: v for k, v in zip(quants_names, quants)}
+    q = dict(zip(quants_names, quants))
     d.update(q)
     return d
 
@@ -113,7 +113,7 @@ def _move_to_device(x, y, device):
 
 
 def _prepend_str(d: dict, s: str):
-    return {(s + "_" + k if s not in k else k): v for k, v in d.items()}
+    return {f"{s}_{k}" if s not in k else k: v for k, v in d.items()}
 
 
 class Interpretation:
@@ -269,10 +269,11 @@ def add_annotations(samples: List[dict]) -> List[dict]:
     Adds a `text` field to the sample dict to use as annotations when plotting.
     """
     for sample in samples:
-        text = ""
-        for key in sample.losses.keys():
-            if "loss" in key:
-                text += f"{key}: {round(sample.losses[key], 5)}\n"
+        text = "".join(
+            f"{key}: {round(sample.losses[key], 5)}\n"
+            for key in sample.losses.keys()
+            if "loss" in key
+        )
         text += f"IMG: {sample.filepath.name}"
         sample.losses["text"] = text
     return samples

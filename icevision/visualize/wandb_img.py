@@ -25,7 +25,7 @@ def bbox_wandb(bbox: BBox, label_id: int, label_name: str, score=None) -> dict:
 
     box_data = {
         "position": {"minX": xmin, "maxX": xmax, "minY": ymin, "maxY": ymax},
-        "class_id": int(label_id),
+        "class_id": label_id,
         "domain": "pixel",
     }
 
@@ -62,9 +62,7 @@ def wandb_image(pred: Prediction, add_ground_truth: bool = False) -> wandb.Image
     # Check if "masks" key is the pred dictionnary
     # if "masks" in pred: pred_masks = pred["masks"]
 
-    class_id_to_label = {
-        id: label for id, label in enumerate(pred.detection.class_map._id2class)
-    }
+    class_id_to_label = dict(enumerate(pred.detection.class_map._id2class))
 
     # Prediction
     box_data = list(
@@ -131,48 +129,41 @@ def wandb_segmentation_image(
         wandb.Image: Specifying the image, but also the prediction masks and possibly ground_truth.
     """
 
-    class_id_to_label = {
-        id: label for id, label in enumerate(pred.segmentation.class_map._id2class)
-    }
+    class_id_to_label = dict(enumerate(pred.segmentation.class_map._id2class))
 
     if pred.segmentation.mask_array:
         masks = {
             "predictions_mask": {
                 "mask_data": pred.segmentation.mask_array.data.squeeze(),
-                "class_labels": dict(
-                    (value, key)
+                "class_labels": {
+                    value: key
                     for key, value in pred.segmentation.class_map._class2id.items()
-                ),
+                },
             }
         }
 
     else:
         masks = {}
 
-    # Ground Truth
     if add_ground_truth:
-
-        # Ground Truth Masks
         if pred.ground_truth.segmentation.masks:
             masks["ground_truth_mask"] = {
                 "mask_data": pred.ground_truth.segmentation.mask_array.data.squeeze(),
-                "class_labels": dict(
-                    (value, key)
+                "class_labels": {
+                    value: key
                     for key, value in pred.ground_truth.segmentation.class_map._class2id.items()
-                ),
+                },
             }
 
-    # Convert classmap to format expected by w&b
-    wandb_classes = []
-
-    for class_entry in pred.ground_truth.segmentation.class_map._class2id:
-        wandb_classes.append(
-            {
-                "name": class_entry,
-                "id": pred.ground_truth.segmentation.class_map._class2id[class_entry],
-            }
-        )
-
+    wandb_classes = [
+        {
+            "name": class_entry,
+            "id": pred.ground_truth.segmentation.class_map._class2id[
+                class_entry
+            ],
+        }
+        for class_entry in pred.ground_truth.segmentation.class_map._class2id
+    ]
     return wandb.Image(
         pred.img,
         masks=masks,

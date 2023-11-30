@@ -112,17 +112,14 @@ def _img_meta(record):
 def _labels(record):
     if len(record.detection.label_ids) == 0:
         return torch.empty(0)
-    else:
-        tensor_label_ids = tensor(record.detection.label_ids)
-        labels = convert_background_from_zero_to_last(
-            label_ids=tensor_label_ids, class_map=record.detection.class_map
-        )
-        return labels
+    tensor_label_ids = tensor(record.detection.label_ids)
+    return convert_background_from_zero_to_last(
+        label_ids=tensor_label_ids, class_map=record.detection.class_map
+    )
 
 
 def _bboxes(record):
     if len(record.detection.label_ids) == 0:
         return torch.empty((0, 4))
-    else:
-        xyxys = [bbox.xyxy for bbox in record.detection.bboxes]
-        return tensor(xyxys, dtype=torch.float32)
+    xyxys = [bbox.xyxy for bbox in record.detection.bboxes]
+    return tensor(xyxys, dtype=torch.float32)

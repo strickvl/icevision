@@ -39,11 +39,6 @@ class BinaryDiceCoefficient(Metric):
 
     def finalize(self) -> Dict[str, float]:
 
-        if self._union == 0:
-            dice = 0
-
-        else:
-            dice = 2.0 * self._intersection / self._union
-
+        dice = 0 if self._union == 0 else 2.0 * self._intersection / self._union
         self._reset()
         return {"dummy_value_for_fastai": dice}

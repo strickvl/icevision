@@ -16,7 +16,7 @@ def sum_losses_mmseg(losses_dict):
             if isinstance(v, torch.Tensor):
                 loss_[k] = float(v.cpu().numpy())
             elif isinstance(v, list):
-                loss_[k] = sum([float(o.cpu().numpy()) for o in v])
+                loss_[k] = sum(float(o.cpu().numpy()) for o in v)
 
     loss_["loss_total"] = sum(loss_.values())
     return loss_

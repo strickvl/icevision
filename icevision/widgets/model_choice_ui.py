@@ -64,25 +64,25 @@ class ModelChoiceUI:
         lib_name = change.new
 
         if self.task == "object_detection":
-            if lib_name == "Torchvision":
-                lib_type = models.torchvision
-                model_list = ["faster_rcnn", "retinanet"]
-
             if lib_name == "MMDetection":
                 lib_type = models.mmdet.models
                 model_list = ["retinanet", "faster_rcnn", "fcos", "sparse_rcnn"]
 
-            if lib_name == "Ross Wightman":
+            elif lib_name == "Ross Wightman":
                 lib_type = models.ross
                 model_list = ["efficientdet"]
 
-        elif self.task == "mask":
-            if lib_name == "Torchvision":
+            elif lib_name == "Torchvision":
                 lib_type = models.torchvision
-                model_list = ["mask_rcnn"]
+                model_list = ["faster_rcnn", "retinanet"]
 
+        elif self.task == "mask":
             if lib_name == "MMDetection":
                 lib_type = models.mmdet.models
+                model_list = ["mask_rcnn"]
+
+            elif lib_name == "Torchvision":
+                lib_type = models.torchvision
                 model_list = ["mask_rcnn"]
 
         elif self.task == "keypoints":

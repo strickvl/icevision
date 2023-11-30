@@ -32,9 +32,7 @@ class BBox:
         )
 
     def __eq__(self, other) -> bool:
-        if isinstance(other, BBox):
-            return self.xyxy == other.xyxy
-        return False
+        return self.xyxy == other.xyxy if isinstance(other, BBox) else False
 
     @property
     def width(self):
@@ -107,10 +105,7 @@ class BBox:
             msg = "\n".join(msg)
             raise InvalidDataError(f"Cannot auto-fix coordinates: {self}\n{msg}")
 
-        if self.xmin < 0 or self.ymin < 0 or self.xmax > img_w or self.ymax > img_h:
-            return True
-
-        return False
+        return self.xmin < 0 or self.ymin < 0 or self.xmax > img_w or self.ymax > img_h
 
     @property
     def xyxy(self):

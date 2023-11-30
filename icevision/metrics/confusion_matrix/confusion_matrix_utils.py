@@ -10,8 +10,7 @@ def get_best_score_item(prediction_items: Collection[Dict]):
         iou_score=1.0,
         predicted_label_id=0,
     )
-    best_item = max(prediction_items, key=lambda x: x["score"], default=dummy)
-    return best_item
+    return max(prediction_items, key=lambda x: x["score"], default=dummy)
 
 
 def pairwise_iou_record_record(target: BaseRecord, prediction: BaseRecord):

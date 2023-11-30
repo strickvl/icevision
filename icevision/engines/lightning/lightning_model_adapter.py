@@ -33,6 +33,4 @@ class LightningModelAdapter(pl.LightningModule, ABC):
                 for entry in self.metrics_keys_to_log_to_prog_bar:
                     if entry[0] == k:
                         self.log(entry[1], v, prog_bar=True)
-                        self.log(f"{metric.name}/{k}", v)
-                    else:
-                        self.log(f"{metric.name}/{k}", v)
+                    self.log(f"{metric.name}/{k}", v)

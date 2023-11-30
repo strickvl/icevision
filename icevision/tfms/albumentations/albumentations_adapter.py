@@ -105,7 +105,7 @@ class AlbumentationsBBoxesComponent(AlbumentationsAdapterComponent):
     def collect(self, record) -> List[BBox]:
         # TODO: quickfix from 576
         # bboxes_xyxy = [_clip_bboxes(xyxy, img_h, img_w) for xyxy in d["bboxes"]]
-        bboxes_xyxy = [xyxy for xyxy in self.adapter._albu_out["bboxes"]]
+        bboxes_xyxy = list(self.adapter._albu_out["bboxes"])
         bboxes = [BBox.from_xyxy(*xyxy) for xyxy in bboxes_xyxy]
         # TODO HACK: Will not work for multitask, will fail silently
         record.detection.set_bboxes(bboxes)
@@ -156,12 +156,11 @@ class AlbumentationsMasksComponent(AlbumentationsAdapterComponent):
         if all(isinstance(i, Polygon) for i in masks) or all(
             isinstance(i, Polygon) for i in self._record_component.masks
         ):
-            rles = []
-            for m in masks:
-                if m.data.any():
-                    rles.append(
-                        RLE.from_coco(m.to_coco_rle(*masks.shape[1:])[0]["counts"])
-                    )
+            rles = [
+                RLE.from_coco(m.to_coco_rle(*masks.shape[1:])[0]["counts"])
+                for m in masks
+                if m.data.any()
+            ]
             self._record_component.set_masks(rles)
         # HACK: Not sure if necessary
         self._record_component = None
@@ -338,7 +337,7 @@ def _flatten_tfms(t):
     flat = []
     for o in t:
         if _is_iter(o):
-            flat += [i for i in o]
+            flat += list(o)
         else:
             flat.append(o)
     return flat

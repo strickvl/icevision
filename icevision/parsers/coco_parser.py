@@ -105,10 +105,7 @@ class COCOBBoxParser(COCOBaseParser):
 class COCOMaskParser(COCOBBoxParser):
     def masks(self, o) -> List[MaskArray]:
         seg = o["segmentation"]
-        if o["iscrowd"]:
-            return [RLE.from_coco(seg["counts"])]
-        else:
-            return [Polygon(seg)]
+        return [RLE.from_coco(seg["counts"])] if o["iscrowd"] else [Polygon(seg)]
 
     def template_record(self) -> BaseRecord:
         record = super().template_record()
@@ -134,9 +131,7 @@ class COCOKeyPointsParser(COCOBBoxParser):
         )
 
     def labels_ids(self, o) -> List[Hashable]:
-        if sum(o["keypoints"]) <= 0:
-            return []
-        return super().labels_ids(o)
+        return [] if sum(o["keypoints"]) <= 0 else super().labels_ids(o)
 
     def areas(self, o) -> List[float]:
         return [o["area"]] if sum(o["keypoints"]) > 0 else []

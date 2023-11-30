@@ -5,13 +5,12 @@ from icevision.imports import *
 # All copied from fastai
 def _get_files(p, fs, extensions=None):
     p = Path(p)
-    res = [
+    return [
         p / f
         for f in fs
         if not f.startswith(".")
         and ((not extensions) or f'.{f.split(".")[-1].lower()}' in extensions)
     ]
-    return res
 
 
 def get_files(
@@ -46,9 +45,9 @@ def get_files(
     return L(sorted(res)) if sort else L(res)
 
 
-image_extensions = set(
+image_extensions = {
     k for k, v in mimetypes.types_map.items() if v.startswith("image/")
-)
+}
 
 
 def get_image_files(path, recurse=True, folders=None):

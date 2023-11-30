@@ -67,12 +67,7 @@ def test_convert_records_to_coco_style_annotations(
         # remember that each annotation is now in the form: (key, value)
         for (k1, v1), (k2, v2) in zip(annotation, expected_annotation):
             assert k1[0] == k2[0]
-            if k1 == "segmentation":
-                # TODO: Skipping segmentation check
-                pass
-            # elif k1 == "category_id":
-            #     assert class_map.get_by_id(v1) == original_cocoid2label[v2]
-            else:
+            if k1 != "segmentation":
                 np.testing.assert_almost_equal(v1, v2)
 
 

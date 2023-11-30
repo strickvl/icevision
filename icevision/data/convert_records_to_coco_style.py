@@ -67,9 +67,7 @@ def create_coco_eval(
 
 
 def convert_record_to_coco_image(record) -> dict:
-    image = {}
-    image["id"] = record.record_id
-    image["file_name"] = Path(record.filepath).name
+    image = {"id": record.record_id, "file_name": Path(record.filepath).name}
     image["width"] = record.width
     image["height"] = record.height
     return image

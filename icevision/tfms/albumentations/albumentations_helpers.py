@@ -174,7 +174,4 @@ def get_transform(tfms_list: List[Any], t: str) -> Any:
     -------
     The `t` transform if found inside `tfms_list`, otherwise None.
     """
-    for el in tfms_list:
-        if t in str(type(el)):
-            return el
-    return None
+    return next((el for el in tfms_list if t in str(type(el))), None)

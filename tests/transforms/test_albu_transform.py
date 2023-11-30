@@ -96,8 +96,8 @@ def test_keypoints_transform(coco_keypoints_parser, check_attributes_on_componen
     # assert "bboxes" in tfm.tfms.processors.keys()
     assert len(record.detection.keypoints) == 3
     assert len(tfmed.detection.keypoints) == 3
-    assert set([c for c in tfmed.detection.keypoints[0].visible]) == {0.0, 1.0, 2.0}
-    assert set([c for c in record.detection.keypoints[0].visible]) == {0, 1, 2}
+    assert set(list(tfmed.detection.keypoints[0].visible)) == {0.0, 1.0, 2.0}
+    assert set(list(record.detection.keypoints[0].visible)) == {0, 1, 2}
     assert (tfmed.detection.keypoints[0].x == record.detection.keypoints[0].x * 2).all()
     assert (tfmed.detection.keypoints[0].y == record.detection.keypoints[0].y * 2).all()
     check_attributes_on_component(tfmed)

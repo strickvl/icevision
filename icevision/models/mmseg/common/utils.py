@@ -71,15 +71,14 @@ def build_model(
         cfg_options=cfg_options,
     )
 
-    if model_type == "EncoderDecoder":
-        if "auxiliary_head" in cfg.model:
-            cfg.model.auxiliary_head.num_classes = num_classes
-
-        if "decode_head" in cfg.model:
-            cfg.model.decode_head.num_classes = num_classes
-    else:
+    if model_type != "EncoderDecoder":
         raise (InvalidMMSegModelType)
 
+    if "auxiliary_head" in cfg.model:
+        cfg.model.auxiliary_head.num_classes = num_classes
+
+    if "decode_head" in cfg.model:
+        cfg.model.decode_head.num_classes = num_classes
     _model = build_segmentor(cfg.model, cfg.get("train_cfg"), cfg.get("test_cfg"))
 
     if _model.backbone.init_cfg:
@@ -87,7 +86,7 @@ def build_model(
 
     _model.init_weights()
 
-    if pretrained == True:
+    if pretrained:
         load_checkpoint(_model, str(weights_path))
 
     if logical_param_groups:

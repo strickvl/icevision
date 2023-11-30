@@ -63,7 +63,8 @@ class COCOMetric(Metric):
             coco_eval.summarize()
 
         stats = coco_eval.stats
-        logs = {
+        self._reset()
+        return {
             "AP (IoU=0.50:0.95) area=all": stats[0],
             "AP (IoU=0.50) area=all": stats[1],
             "AP (IoU=0.75) area=all": stats[2],
@@ -77,6 +78,3 @@ class COCOMetric(Metric):
             "AR (IoU=0.50:0.95) area=medium maxDets=100": stats[10],
             "AR (IoU=0.50:0.95) area=large maxDets=100": stats[11],
         }
-
-        self._reset()
-        return logs

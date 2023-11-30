@@ -8,7 +8,7 @@ class MockMetric:
     def accumulate(self):
         pass
 
-    def finalize(sefl):
+    def finalize(self):
         return {"metric_a": 1, "metric_b": 2}
 
 

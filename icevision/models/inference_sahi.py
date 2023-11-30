@@ -90,66 +90,61 @@ class IceSahiModel(DetectionModel):
         pred = sahi_get_sliced_prediction(image=image, detection_model=self, **kwargs)
         if keep_sahi_format:
             return pred
-        else:
-            scores = []
-            label_ids = []
-            bboxes = []
-            record = BaseRecord(
-                (
-                    BBoxesRecordComponent(),
-                    InstancesLabelsRecordComponent(),
-                    ScoresRecordComponent(),
-                    ImageRecordComponent(),
+        scores = []
+        label_ids = []
+        bboxes = []
+        record = BaseRecord(
+            (
+                BBoxesRecordComponent(),
+                InstancesLabelsRecordComponent(),
+                ScoresRecordComponent(),
+                ImageRecordComponent(),
+            )
+        )
+
+        for pred in pred.object_prediction_list:
+            scores.append(pred.score.value)
+            label_ids.append(pred.category.name)
+            bboxes.append(
+                BBox.from_xyxy(
+                    pred.bbox.minx, pred.bbox.miny, pred.bbox.maxx, pred.bbox.maxy
                 )
             )
 
-            for pred in pred.object_prediction_list:
-                scores.append(pred.score.value)
-                label_ids.append(pred.category.name)
-                bboxes.append(
-                    BBox.from_xyxy(
-                        pred.bbox.minx, pred.bbox.miny, pred.bbox.maxx, pred.bbox.maxy
-                    )
-                )
+        record.detection.set_class_map(self.class_map)
+        record.detection.add_labels(label_ids)
+        record.detection.add_bboxes(bboxes)
+        record.detection.set_scores(np.array(scores))
 
-            record.detection.set_class_map(self.class_map)
-            record.detection.add_labels(label_ids)
-            record.detection.add_bboxes(bboxes)
-            record.detection.set_scores(np.array(scores))
+        if isinstance(image, (str, Path)):
+            image = PIL.Image.open(Path(image))
 
-            if isinstance(image, (str, Path)):
-                image = PIL.Image.open(Path(image))
+        record.set_img(image)
+        w, h = image.shape
 
-            record.set_img(image)
-            w, h = image.shape
+        if return_img:
+            pred_img = draw_record(
+                record=record,
+                class_map=self.class_map,
+                display_label=display_label,
+                display_score=display_score,
+                display_bbox=display_bbox,
+                font_path=font_path,
+                font_size=font_size,
+                return_as_pil_img=return_as_pil_img,
+            )
+        else:
+            record._unload()
 
-            if return_img:
-                pred_img = draw_record(
-                    record=record,
-                    class_map=self.class_map,
-                    display_label=display_label,
-                    display_score=display_score,
-                    display_bbox=display_bbox,
-                    font_path=font_path,
-                    font_size=font_size,
-                    return_as_pil_img=return_as_pil_img,
-                )
-            else:
-                record._unload()
+        pred_dict = record.as_dict()
 
-            pred_dict = record.as_dict()
+        pred_dict["img"] = pred_img if return_img else None
+        pred_dict["width"] = w
+        pred_dict["height"] = h
 
-            if return_img:
-                pred_dict["img"] = pred_img
-            else:
-                pred_dict["img"] = None
+        del pred_dict["common"]
 
-            pred_dict["width"] = w
-            pred_dict["height"] = h
-
-            del pred_dict["common"]
-
-            return pred_dict
+        return pred_dict
 
     def _create_object_prediction_list_from_original_predictions(
         self,

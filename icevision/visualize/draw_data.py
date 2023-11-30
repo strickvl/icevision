@@ -172,16 +172,17 @@ def draw_sample(
 
             # logic for plotting specific labels only
             # `include_only` > `exclude_labels`
-            if not label == []:
+            if label != []:
                 # label_str = (
                 #     class_map.get_by_name(label) if class_map is not None else ""
                 # )
-                if include_only is not None:
-                    if not label in include_only:
-                        continue
-                elif label in exclude_labels:
+                if (
+                    include_only is not None
+                    and label not in include_only
+                    or include_only is None
+                    and label in exclude_labels
+                ):
                     continue
-
             # if color-map is given and `labels` are predicted
             # then set color accordingly
             if color_map is not None:
@@ -205,10 +206,10 @@ def draw_sample(
                     if composite.get_component_by_type(
                         ClassificationLabelsRecordComponent
                     ):
-                        prefix = prettify_func(task) + ": "
+                        prefix = f"{prettify_func(task)}: "
                 if include_instances_task_names:
                     if composite.get_component_by_type(InstancesLabelsRecordComponent):
-                        prefix = prettify_func(task) + ": "
+                        prefix = f"{prettify_func(task)}: "
 
                 img = draw_label(
                     img=img,
@@ -271,17 +272,12 @@ def draw_label(
             x, y = 0, 0
 
     if class_map is not None:
-        if isinstance(label, int):
-            # TODO: This may never get triggered because we're looping
-            # over composite.labels which is a list of strings
-            caption = class_map.get_by_id(label)
-        else:
-            caption = label
+        caption = class_map.get_by_id(label) if isinstance(label, int) else label
     else:
         caption = str(label)
     if prettify:
         # We could introduce a callback here for more complex label renaming
-        caption = str(prefix) + str(caption)
+        caption = prefix + str(caption)
         caption = prettify_func(caption)
 
     # Append label confidence to caption if applicable
@@ -353,10 +349,7 @@ def _draw_label(
 
     # Now draw text over the border
     draw.text((x, y), caption, font=font, fill=color)
-    if return_as_pil_img:
-        return img
-    else:
-        return np.array(img)
+    return img if return_as_pil_img else np.array(img)
 
 
 def draw_record(
@@ -470,9 +463,7 @@ def draw_bbox(
     min_corner = 1
     max_corner = 15
     corner_thickness = int(0.005 * dims[1] + min_corner)
-    if corner_thickness > max_corner:
-        corner_thickness = int(max_corner)
-
+    corner_thickness = min(corner_thickness, max_corner)
     corner_length = int(0.021 * dims[1] + 2.25)
 
     # inner thickness of bboxes with corners
@@ -482,12 +473,9 @@ def draw_bbox(
     min_bbox = 1
     max_bbox = 8
     bbox_thickness = int(0.0041 * dims[1] - 0.0058)
-    if bbox_thickness < min_bbox:
-        bbox_thickness = min_bbox
-    if bbox_thickness > max_bbox:
-        bbox_thickness = int(max_bbox)
-
-    if gap == False:
+    bbox_thickness = max(bbox_thickness, min_bbox)
+    bbox_thickness = min(bbox_thickness, max_bbox)
+    if not gap:
         xyxy = tuple(np.array(bbox.xyxy, dtype=int))
         draw.rectangle(xyxy, fill=None, outline=color, width=bbox_thickness)
         return np.array(img)

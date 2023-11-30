@@ -188,11 +188,7 @@ def model_from_checkpoint(
             print(err_msg)
 
     if classes is None:
-        if is_coco:
-            classes = CLASSES
-        else:
-            classes = checkpoint["meta"].get("classes", None)
-
+        classes = CLASSES if is_coco else checkpoint["meta"].get("classes", None)
     class_map = None
     if classes:
         class_map = ClassMap(classes)
@@ -254,7 +250,7 @@ def model_from_checkpoint(
     if eval_mode:
         model.eval()
 
-    checkpoint_and_model = {
+    return {
         "model": model,
         "model_type": model_type,
         "backbone": backbone,
@@ -262,5 +258,4 @@ def model_from_checkpoint(
         "img_size": img_size,
         "checkpoint": checkpoint,
     }
-    return checkpoint_and_model
     # return model, model_type, backbone, class_map, img_size, checkpoint

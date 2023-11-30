@@ -99,12 +99,12 @@ def test_record_load(record):
     # assert isinstance(record_loaded.detection.mask_array, MaskArray)
 
     # test original record is not modified
-    assert record.img == None
+    assert record.img is None
     # assert isinstance(record.detection.masks[0], VocMaskFile)
 
     # test unload
     record_loaded.unload()
-    assert record_loaded.img == None
+    assert record_loaded.img is None
     # assert isinstance(record_loaded.detection.masks[0], VocMaskFile)
 
 
@@ -115,12 +115,12 @@ def test_gray_scale_record_load(gray_scale_record):
     # assert isinstance(record_loaded.detection.mask_array, MaskArray)
 
     # test original record is not modified
-    assert gray_scale_record.img == None
+    assert gray_scale_record.img is None
     # assert isinstance(gray_scale_record.detection.masks[0], VocMaskFile)
 
     # test unload
     record_loaded.unload()
-    assert record_loaded.img == None
+    assert record_loaded.img is None
     # assert isinstance(record_loaded.detection.masks, EncodedRLEs)
 
 

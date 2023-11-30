@@ -21,12 +21,12 @@ class KeyPoints:
         self, keypoints: Union[List[int], np.array], metadata: Type[KeypointsMetadata]
     ):
         self.keypoints = np.array(keypoints)
-        self.x = self.keypoints[0::3]
+        self.x = self.keypoints[::3]
         self.y = self.keypoints[1::3]
         self.visible = self.keypoints[2::3]
-        self.xy = [(x, y) for x, y in zip(self.x, self.y)]
+        self.xy = list(zip(self.x, self.y))
         self.n_visible_keypoints = (self.visible > 0).sum()
-        self.xyv = [(x, y, v) for x, y, v in zip(self.x, self.y, self.visible)]
+        self.xyv = list(zip(self.x, self.y, self.visible))
         self.metadata = metadata
 
     @classmethod

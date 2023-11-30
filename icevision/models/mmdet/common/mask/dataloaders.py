@@ -110,7 +110,6 @@ def _masks(record):
         raise RuntimeError(
             "Negative samples still needs to be implemented. This error might appear due to cropping, please check your transformations."
         )
-    else:
-        mask = record.detection.mask_array.data
-        _, h, w = mask.shape
-        return BitmapMasks(mask, height=h, width=w)
+    mask = record.detection.mask_array.data
+    _, h, w = mask.shape
+    return BitmapMasks(mask, height=h, width=w)

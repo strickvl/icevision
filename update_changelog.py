@@ -8,8 +8,7 @@ from github import Github
 
 def get_closed_pull_requests():
     icevision_repo = g.get_repo("airctic/icevision")
-    pull_requests = icevision_repo.get_pulls(state="closed")
-    return pull_requests
+    return icevision_repo.get_pulls(state="closed")
 
 
 def filter_pull_requests(
@@ -21,10 +20,7 @@ def filter_pull_requests(
     "Returns all pull requests that have the same pull request id as the given limits or are inbetween."
     collected_pull_requests = []
     page_counter = 0
-    if start_pull_request_id is None:
-        collect_flag = True
-    else:
-        collect_flag = False
+    collect_flag = start_pull_request_id is None
     stop_flag = False
     while True:
         try:
@@ -56,7 +52,7 @@ def filter_pull_requests(
 def extract_contribution_data_from_pull_requests(pull_requests):
     data = {}
     for pull_request in pull_requests:
-        if not pull_request.user.login in data.keys():
+        if pull_request.user.login not in data:
             data[pull_request.user.login] = [
                 {
                     "title": pull_request.title,

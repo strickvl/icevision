@@ -87,12 +87,7 @@ def param_groups(model):
 
 def param_groups_default(model):
 
-    _param_groups = [
-        p for p in model.parameters() if p.requires_grad
-    ]  # equivalent to fastai.trainable_params
-
-    # check_all_model_params_in_groups2(model, [_param_groups])
-    return _param_groups
+    return [p for p in model.parameters() if p.requires_grad]
 
 
 def create_model_config(

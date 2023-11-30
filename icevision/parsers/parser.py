@@ -86,10 +86,7 @@ class Parser(ParserInterface, ABC):
         return records
 
     def _check_path(self, path: Union[str, Path] = None):
-        if path is None:
-            return False
-        if path is not None:
-            return Path(path).exists()
+        return False if path is None else Path(path).exists()
 
     def parse(
         self,
@@ -141,10 +138,10 @@ class Parser(ParserInterface, ABC):
 
         template = CodeTemplate()
         template.add_line(f"class MyParser({cls.__name__}):", 0)
-        template.add_line(f"def __init__(self, template_record):", 1)
-        template.add_line(f"super().__init__(template_record=template_record)", 2)
-        template.add_line(f"def __iter__(self) -> Any:", 1)
-        template.add_line(f"def __len__(self) -> int:", 1)
+        template.add_line("def __init__(self, template_record):", 1)
+        template.add_line("super().__init__(template_record=template_record)", 2)
+        template.add_line("def __iter__(self) -> Any:", 1)
+        template.add_line("def __len__(self) -> int:", 1)
         # template.add_line("def create_record(self) -> BaseRecord:", 1)
         # template.add_line(f"return {record.__class__.__name__}({components_names})", 2)
         template.add_line("def record_id(self, o: Any) -> Hashable:", 1)

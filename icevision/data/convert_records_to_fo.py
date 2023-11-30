@@ -86,12 +86,11 @@ def convert_record_to_fo_sample(
 
     if filepath is not None:
         _internal_filepath = filepath
-    else:
-        if sample is not None:
-            _internal_filepath = sample.filepath
-        else:
-            _internal_filepath = record.common.filepath
+    elif sample is None:
+        _internal_filepath = record.common.filepath
 
+    else:
+        _internal_filepath = sample.filepath
     # Prepare undo bbox tfms fn
     img = Image.open(_internal_filepath)
     if undo_bbox_tfms_fn is not None:
@@ -120,9 +119,7 @@ def convert_record_to_fo_sample(
     # Get sample after successful detection
     if sample is None:
         sample = Sample(_internal_filepath)
-    elif isinstance(sample, Sample):
-        pass
-    else:
+    elif not isinstance(sample, Sample):
         raise ValueError(f"Sample {sample} is not None or fo.Sample")
 
     # Add detections to sample
@@ -136,31 +133,33 @@ def convert_record_to_fo_sample(
 
 def record_to_fo_detections(record, undo_bbox_tfms) -> Iterable[Detection]:
 
-    if hasattr(record, "detection"):
-        if hasattr(record.detection, "bboxes"):
-            if hasattr(record.detection, "scores"):
-                detections = [
-                    Detection(
-                        label=label, bounding_box=undo_bbox_tfms(bbox), confidence=score
-                    )
-                    for label, bbox, score in zip(
-                        record.detection.labels,
-                        record.detection.bboxes,
-                        record.detection.scores,
-                    )
-                ]
-            else:
-                detections = [
-                    Detection(label=label, bounding_box=undo_bbox_tfms(bbox))
-                    for label, bbox in zip(
-                        record.detection.labels, record.detection.bboxes
-                    )
-                ]
-        else:
-            raise NotImplementedError("Fiftyone export support only bboxes yet")
-    else:
-        raise ValueError(f"Provided record does not contain a detection attribute")
+    if not hasattr(record, "detection"):
+        raise ValueError("Provided record does not contain a detection attribute")
 
+    if hasattr(record.detection, "bboxes"):
+        detections = (
+            [
+                Detection(
+                    label=label,
+                    bounding_box=undo_bbox_tfms(bbox),
+                    confidence=score,
+                )
+                for label, bbox, score in zip(
+                    record.detection.labels,
+                    record.detection.bboxes,
+                    record.detection.scores,
+                )
+            ]
+            if hasattr(record.detection, "scores")
+            else [
+                Detection(label=label, bounding_box=undo_bbox_tfms(bbox))
+                for label, bbox in zip(
+                    record.detection.labels, record.detection.bboxes
+                )
+            ]
+        )
+    else:
+        raise NotImplementedError("Fiftyone export support only bboxes yet")
     return detections
 
 

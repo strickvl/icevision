@@ -66,9 +66,6 @@ def build_train_batch(records: Sequence[BaseRecord]):
 
 
 def build_infer_batch(records: Sequence[BaseRecord]):
-    tensor_images = []
-    for record in records:
-        tensor_images.append(im2tensor(record.img))
-
+    tensor_images = [im2tensor(record.img) for record in records]
     tensor_images = torch.stack(tensor_images)
     return (tensor_images,), records

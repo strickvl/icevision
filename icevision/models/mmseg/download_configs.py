@@ -10,7 +10,7 @@ BASE_URL = "https://codeload.github.com/Orbis-International/mmsegmentation_confi
 
 def download_mmseg_configs() -> Path:
 
-    save_dir = get_root_dir() / f"mmsegmentation_configs"
+    save_dir = get_root_dir() / "mmsegmentation_configs"
 
     mmseg_config_path = save_dir / f"mmsegmentation_configs-{VERSION[1:]}/configs"
     download_path = save_dir / f"{VERSION}.zip"

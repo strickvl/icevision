@@ -53,5 +53,4 @@ def convert_dataloaders_to_fastai(
         fastai_dls.append(fastai_dl)
 
     device = device or fastai.default_device()
-    fastai_dls = fastai.DataLoaders(*fastai_dls).to(device)
-    return fastai_dls
+    return fastai.DataLoaders(*fastai_dls).to(device)

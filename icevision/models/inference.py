@@ -90,11 +90,7 @@ def _end2end_detect(
     pred_dict = record.as_dict()
 
     # expose img at the root instead of having under the `common` key
-    if return_img:
-        pred_dict["img"] = pred_img
-    else:
-        pred_dict["img"] = None
-
+    pred_dict["img"] = pred_img if return_img else None
     pred_dict["width"] = w
     pred_dict["height"] = h
     # delete the `common` key that holds both the `img` and its shape
@@ -218,11 +214,9 @@ def draw_img_and_boxes(
         record.detection.add_labels([bbox["class"]])
         record.detection.set_scores(bbox["score"])
 
-    pred_img = draw_sample(
+    return draw_sample(
         record,
         display_score=display_score,
         label_color=label_color,
         label_border_color=label_border_color,
     )
-
-    return pred_img

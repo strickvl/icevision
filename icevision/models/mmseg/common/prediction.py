@@ -38,14 +38,12 @@ def _predict_batch(
     model.eval()
 
     raw_preds = model(**batch, return_loss=False)
-    preds = convert_raw_predictions(
+    return convert_raw_predictions(
         batch=batch,
         raw_preds=raw_preds,
         records=records,
         keep_images=keep_images,
     )
-
-    return preds
 
 
 def convert_raw_predictions(

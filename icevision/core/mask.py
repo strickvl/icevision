@@ -117,15 +117,14 @@ class MaskArray(Mask):
 
     @classmethod
     def from_masks(cls, masks: Union[EncodedRLEs, Sequence[Mask]], h: int, w: int):
-        # HACK: check for backwards compatibility
         if isinstance(masks, EncodedRLEs):
             return masks.to_mask(h, w)
-        else:
-            masks_arrays = [o.to_mask(h=h, w=w).data for o in masks]
-            if len(masks_arrays) == 0:
-                return cls(np.array([]))
-            else:
-                return cls(np.concatenate(masks_arrays))
+        masks_arrays = [o.to_mask(h=h, w=w).data for o in masks]
+        return (
+            cls(np.array([]))
+            if not masks_arrays
+            else cls(np.concatenate(masks_arrays))
+        )
 
 
 class MaskFile(Mask):
@@ -230,8 +229,7 @@ class RLE(Mask):
         current = 1
         coco_counts = []
         for start, count in zip(counts[::2], counts[1::2]):
-            coco_counts.append(start - current)  # zeros
-            coco_counts.append(count)  # ones
+            coco_counts.extend((start - current, count))
             current = start + count
 
         # remove trailing zero
@@ -310,7 +308,6 @@ class SemanticMaskFile(Mask):
 
     def to_coco_rle(self, h, w) -> List[dict]:
         raise NotImplementedError
-        return self.to_mask(h=h, w=w).to_coco_rle(h=h, w=w)
 
     def to_erles(self, h, w) -> EncodedRLEs:
         # HACK: Doesn't make sense to convert to ERLE?

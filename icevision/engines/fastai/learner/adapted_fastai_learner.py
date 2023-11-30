@@ -26,7 +26,7 @@ def adapted_fastai_learner(
         for metric in metrics
     ]
 
-    if splitter == None:
+    if splitter is None:
         if hasattr(model, "param_groups"):
 
             def splitter(model):

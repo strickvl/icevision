@@ -29,15 +29,13 @@ def _predict_batch(
     bench = bench.eval().to(device)
 
     raw_preds = bench(x=imgs, img_info=img_info)
-    preds = convert_raw_predictions(
+    return convert_raw_predictions(
         batch=batch,
         raw_preds=raw_preds,
         records=records,
         detection_threshold=detection_threshold,
         keep_images=keep_images,
     )
-
-    return preds
 
 
 def predict(

@@ -11,7 +11,7 @@ def test_notnone():
 
 def test_ifnotnone():
     assert ifnotnone(1, lambda o: o + 1) == 2
-    assert ifnotnone(None, lambda o: o + 1) == None
+    assert ifnotnone(None, lambda o: o + 1) is None
 
 
 def test_last():

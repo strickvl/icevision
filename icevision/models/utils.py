@@ -31,17 +31,14 @@ def filter_params(
     Returns:
         Generator
     """
-    children = list(module.children())
-    if not children:
-        if not isinstance(module, BN_TYPES) or bn:
-            for param in module.parameters():
-                if not only_trainable or param.requires_grad:
-                    yield param
-    else:
+    if children := list(module.children()):
         for child in children:
-            for param in filter_params(
+            yield from filter_params(
                 module=child, bn=bn, only_trainable=only_trainable
-            ):
+            )
+    elif not isinstance(module, BN_TYPES) or bn:
+        for param in module.parameters():
+            if not only_trainable or param.requires_grad:
                 yield param
 
 
@@ -141,9 +138,6 @@ def get_dataloaders(
         - dataloaders: List containing train_dl and valid_dl -> [train_dl, valid_dl]
     """
 
-    ds = []
-    dls = []
-
     # Datasets
     train_ds = Dataset(records_list[0], tfms_list[0])
     valid_ds = Dataset(records_list[1], tfms_list[1])
@@ -166,12 +160,8 @@ def get_dataloaders(
         **dataloader_kwargs,
     )
 
-    ds.append(train_ds)
-    ds.append(valid_ds)
-
-    dls.append(train_dl)
-    dls.append(valid_dl)
-
+    ds = [train_ds, valid_ds]
+    dls = [train_dl, valid_dl]
     return ds, dls
 
 

@@ -17,11 +17,10 @@ def sample_dataset(samples_source):
 
 @pytest.fixture()
 def pretrained_state_dict():
-    state_dict = torch.hub.load_state_dict_from_url(
+    return torch.hub.load_state_dict_from_url(
         "https://download.pytorch.org/models/maskrcnn_resnet50_fpn_coco-bf2d0c1e.pth",
         progress=True,
     )
-    return state_dict
 
 
 def _test_preds(preds):

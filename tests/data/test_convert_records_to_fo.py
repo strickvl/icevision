@@ -116,10 +116,10 @@ def test_create_fo_dataset(object_detection_record, cleanup_fo_dataset):
     )  # Cleanup record, that has scope session
 
     assert isinstance(dataset, Dataset)
-    assert len(list(dataset.iter_samples())) > 0
+    assert list(dataset.iter_samples())
 
     # Test for prediction and create new dataset
     dataset = create_fo_dataset([object_detection_record], "_iv_test_1")
 
     assert isinstance(dataset, Dataset)
-    assert len(list(dataset.iter_samples())) > 0
+    assert list(dataset.iter_samples())

@@ -37,11 +37,6 @@ class BinaryJaccardIndex(Metric):
 
     def finalize(self) -> Dict[str, float]:
 
-        if self._union == 0:
-            jaccard = 0
-
-        else:
-            jaccard = self._intersection / self._union
-
+        jaccard = 0 if self._union == 0 else self._intersection / self._union
         self._reset()
         return {"binary_jaccard_value_for_fastai": jaccard}

@@ -24,7 +24,7 @@ class TaskComposite:
 
     def __init__(self, components: Sequence[TaskComponent]):
         components = set(components)
-        components.update(set(comp() for comp in self.base_components))
+        components.update({comp() for comp in self.base_components})
         self.components = components
         self.set_task_components(self.components)
 
@@ -103,7 +103,7 @@ class Composite:
         self._parent = None
 
         components = set(components) if components is not None else set()
-        components.update(set(comp() for comp in self.base_components))
+        components.update({comp() for comp in self.base_components})
         self.set_components(components)
 
     def __getattr__(self, name):
@@ -127,11 +127,11 @@ class Composite:
     def reduce_on_components(
         self, fn_name: str, reduction: Optional[str] = None, **fn_kwargs
     ) -> Any:
-        results = []
-        for component in self.components:
-            results.append(getattr(component, fn_name)(**fn_kwargs))
-
-        if reduction is not None and len(results) > 0:
+        results = [
+            getattr(component, fn_name)(**fn_kwargs)
+            for component in self.components
+        ]
+        if reduction is not None and results:
             out = results.pop(0)
             for r in results:
                 getattr(out, reduction)(r)

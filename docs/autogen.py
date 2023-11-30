@@ -105,7 +105,7 @@ def copy_examples(examples_dir, destination_dir):
             continue
         module_path = os.path.join(examples_dir, file)
         docstring, starting_line = get_module_docstring(module_path)
-        destination_file = os.path.join(destination_dir, file[:-2] + "md")
+        destination_file = os.path.join(destination_dir, f"{file[:-2]}md")
         with open(destination_file, "w+", encoding="utf-8") as f_out, open(
             examples_dir / file, "r+", encoding="utf-8"
         ) as f_in:
@@ -145,7 +145,7 @@ def get_module_docstring(filepath):
     if co.co_consts and isinstance(co.co_consts[0], str):
         docstring = co.co_consts[0]
     else:
-        print("Could not get the docstring from " + filepath)
+        print(f"Could not get the docstring from {filepath}")
         docstring = ""
     return docstring, co.co_firstlineno
 
@@ -154,8 +154,8 @@ def get_module_docstring(filepath):
 
 
 def py_to_nb_md(dest_dir):
+    dir_path = "py"
     for file_path in os.listdir("py/"):
-        dir_path = "py"
         file_name = file_path
         py_path = os.path.join(dir_path, file_path)
         file_name_no_ext = os.path.splitext(file_name)[0]
@@ -164,8 +164,8 @@ def py_to_nb_md(dest_dir):
         if ext != ".py":
             continue
 
-        nb_path = os.path.join("ipynb", file_name_no_ext + ".ipynb")
-        md_path = os.path.join(dest_dir, "tutorial", file_name_no_ext + ".md")
+        nb_path = os.path.join("ipynb", f"{file_name_no_ext}.ipynb")
+        md_path = os.path.join(dest_dir, "tutorial", f"{file_name_no_ext}.md")
 
         tutobooks.py_to_md(py_path, nb_path, md_path, "templates/img")
 
@@ -213,9 +213,9 @@ def nb_to_md(src_dir, nb_folder, dest_dir):
             continue
 
         # md_path = os.path.join(dest_dir, 'tutorial', file_name_no_ext + '.md')
-        file_name_md = file_name_no_ext + ".md"
+        file_name_md = f"{file_name_no_ext}.md"
         # md_path = os.path.join(dest_dir, file_name_md)
-        md_path = os.path.join(dest_dir, file_name_no_ext + ".md")
+        md_path = os.path.join(dest_dir, f"{file_name_no_ext}.md")
         images_path = "images"
 
         tutobooks.nb_to_md(nb_path, md_path, images_path)
@@ -246,7 +246,7 @@ def examples_to_md(dest_dir):
             continue
 
         # md_path = os.path.join(dest_dir, 'tutorial', file_name_no_ext + '.md')
-        md_path = os.path.join(dest_dir, file_name_no_ext + ".md")
+        md_path = os.path.join(dest_dir, f"{file_name_no_ext}.md")
 
         # copy_examples(examples_dir, dest_dir / "examples")
 
@@ -275,7 +275,7 @@ def generate(dest_dir: Path):
 
     # Copy images folder from root folder to the template images folder
     copy_tree(str(icevision_dir / "images"), str(template_images_dir))
-    from_to = f"root/images -> docs/images"
+    from_to = "root/images -> docs/images"
     logger.opt(colors=True).log(
         "INFO",
         "️<green><bold>\nCopying images folder: {}</></>",
@@ -296,7 +296,7 @@ def generate(dest_dir: Path):
 
     # Copy web manifest
     shutil.copyfile("manifest.webmanifest", dest_dir / "manifest.webmanifest")
-    from_to = f"root/manifest.webmanifest -> docs/manifest.webmanifest"
+    from_to = "root/manifest.webmanifest -> docs/manifest.webmanifest"
     logger.opt(colors=True).log(
         "INFO",
         "️<green><bold>\nCopying webmanifest file: {}</></>",
@@ -373,7 +373,7 @@ def generate(dest_dir: Path):
 
     # Copy css folder
     css_dir_src = str(icevision_dir / "docs/css")
-    css_dir_dest = str(str(dest_dir / "css"))
+    css_dir_dest = str(dest_dir / "css")
     copy_tree(css_dir_src, css_dir_dest)
     from_to = f"{css_dir_src} -> {css_dir_dest}"
     logger.opt(colors=True).log(
@@ -385,7 +385,7 @@ def generate(dest_dir: Path):
     # Copy js folder
     # copy_tree(str(icevision_dir / "docs/js"), str(dest_dir / "js"))
     js_dir_src = str(icevision_dir / "docs/js")
-    js_dir_dest = str(str(dest_dir / "js"))
+    js_dir_dest = str(dest_dir / "js")
     copy_tree(js_dir_src, js_dir_dest)
     from_to = f"{js_dir_src} -> {js_dir_dest}"
     logger.opt(colors=True).log(

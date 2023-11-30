@@ -25,12 +25,10 @@ def mmdetection_learner(
         A fastai `Learner`.
     """
 
-    learn = adapted_fastai_learner(
+    return adapted_fastai_learner(
         dls=dls,
         model=model,
         cbs=cbs,
         loss_func=loss_fn,
         **learner_kwargs,
     )
-
-    return learn

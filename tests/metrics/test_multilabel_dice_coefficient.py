@@ -263,14 +263,11 @@ def test_multilabel_dice_metric(setup_cases):
         if case["binary"] == True:
 
             multi_dice = MulticlassDiceCoefficient(classes_to_exclude=["background"])
-            multi_dice.accumulate([prediction])
-            results = multi_dice.finalize()
-
         else:
 
             multi_dice = MulticlassDiceCoefficient()
-            multi_dice.accumulate([prediction])
-            results = multi_dice.finalize()
+        multi_dice.accumulate([prediction])
+        results = multi_dice.finalize()
 
         name = case["name"]
 

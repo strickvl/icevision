@@ -8,7 +8,7 @@ BASE_URL = "https://github.com/airctic/mmdetection_configs/archive/refs/tags"
 
 
 def download_mmdet_configs() -> Path:
-    save_dir = get_root_dir() / f"mmdetection_configs"
+    save_dir = get_root_dir() / "mmdetection_configs"
 
     mmdet_config_path = save_dir / f"mmdetection_configs-{VERSION[1:]}/configs"
     download_path = save_dir / f"{VERSION}.zip"
